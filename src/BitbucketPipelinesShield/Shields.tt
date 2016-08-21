@@ -1,0 +1,48 @@
+﻿<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#
+var model = new {
+                Badges = new [] {
+                                    new { Property = "BitbucketPipelinesShield", ShieldIoUrl = "https://img.shields.io/badge/Bitbucket_Pipelines-Shield-brightgreen.svg"},
+                                    new { Property = "BuildPassing", ShieldIoUrl = "https://img.shields.io/badge/build-passing-brightgreen.svg"},
+                                    new { Property = "BuildFailing", ShieldIoUrl = "https://img.shields.io/badge/build-failing-red.svg"},
+                                    new { Property = "BuildRunning", ShieldIoUrl = "https://img.shields.io/badge/build-running-lightgrey.svg"},
+                                    new { Property = "BuildUnresponsive", ShieldIoUrl = "https://img.shields.io/badge/build-unresponsive-lightgrey.svg"},
+                                    new { Property = "BuildUnknown", ShieldIoUrl = "https://img.shields.io/badge/build-unknown-lightgrey.svg"}
+                                }
+            };
+#>
+namespace BitbucketPipelinesShield
+{
+    using Nancy;
+    public static class Shields
+    {
+        private const string SvgContentType = "image/svg+xml";
+<#
+using(var client = new System.Net.WebClient())
+{
+    foreach(var badge in model.Badges) {
+    var shieldData = client.DownloadData(badge.ShieldIoUrl);
+    var dataString = string.Join(
+            ", ",
+            shieldData.Select(
+                data=>string.Format("0x{0:x2}", data)
+            )
+        );
+    #>
+        private static readonly byte[] <#=badge.Property#> = { <#=dataString #> };
+        private const int <#=badge.Property#>Length = <#=shieldData.Length #>;
+        public static Response <#=badge.Property#>Response { get; } =   new Response {
+                                                                            ContentType = SvgContentType,
+                                                                            Contents = stream => stream.Write(<#=badge.Property#>, 0, <#=badge.Property#>Length),
+                                                                            Headers =   { 
+                                                                                            { "Content-Disposition", "inline;filename=<#=badge.Property#>.svg" },
+                                                                                            { "Pragma", "no-cache"},
+                                                                                            {"Cache-Control", "no-store, no-cache, must-revalidate, pre-check=0, post-check=0, max-age=0"},
+                                                                                            {"Expires", "-1"}
+                                                                                        }
+                                                                        }; 
+<# }
+}#>
+    }
+}
