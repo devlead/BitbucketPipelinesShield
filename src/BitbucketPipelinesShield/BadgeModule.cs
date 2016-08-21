@@ -68,7 +68,7 @@ namespace BitbucketPipelinesShield
                 .Select(token => new {State = token.Value<string>("state"), Url = token.Value<string>("url")})
                 .FirstOrDefault();
 
-            urlResponse = new RedirectResponse(build?.Url ?? "https://bitbucket.org/{key.Item1}/{key.Item2}/addon/pipelines/home#!/results/");
+            urlResponse = new RedirectResponse(build?.Url ?? $"https://bitbucket.org/{cacheKey.Item1}/{cacheKey.Item2}/addon/pipelines/home#!/results/");
 
             statusResponse = GetStatusResponse(build?.State);
 

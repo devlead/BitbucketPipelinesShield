@@ -1,0 +1,8 @@
+# Cake Bitbucket Pipeline
+image: devlead/bitbucket-pipelines-cakecoreclr
+
+pipelines:
+  default:
+    - step:
+        script:
+          - cake --target="Bitbucket-Pipelines" --verbosity=Verbose
