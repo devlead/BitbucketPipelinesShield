@@ -19,8 +19,7 @@ namespace BitbucketPipelinesShield
         }
 
         private static readonly ConcurrentDictionary<Tuple<string, string, string>, string> StatusApiUrls = new ConcurrentDictionary<Tuple<string, string, string>, string>();
-        private static readonly ConcurrentDictionary<Tuple<string, string, string>, Response> StatusResponseCache = new ConcurrentDictionary<Tuple<string, string, string>, Response>();
-        private static readonly ConcurrentDictionary<Tuple<string, string, string>, Response> UrlResponseCache = new ConcurrentDictionary<Tuple<string, string, string>, Response>();
+        private static readonly ConcurrentDictionary<Tuple<string, string, string>, BadgeCacheItem> StatusCache = new ConcurrentDictionary<Tuple<string, string, string>, BadgeCacheItem>();
 
         private static async Task<Response> GetBuildStatus(string owner, string repo, string node)
         {
@@ -48,16 +47,10 @@ namespace BitbucketPipelinesShield
 
         private static async Task<Response> GetBuildResponse(Tuple<string, string, string> cacheKey, bool status)
         {
-            Response statusResponse;
-            if (status && StatusResponseCache.TryGetValue(cacheKey, out statusResponse))
+            BadgeCacheItem cacheItem;
+            if (StatusCache.TryGetValue(cacheKey, out cacheItem) && cacheItem.Expires > DateTime.UtcNow.Ticks)
             {
-                return statusResponse;
-            }
-
-            Response urlResponse;
-            if (UrlResponseCache.TryGetValue(cacheKey, out urlResponse))
-            {
-                return urlResponse;
+                return status ? cacheItem.Status : cacheItem.Url;
             }
 
             var bitbucketStatus = await GetBitbucketStatus(cacheKey);
@@ -68,12 +61,14 @@ namespace BitbucketPipelinesShield
                 .Select(token => new {State = token.Value<string>("state"), Url = token.Value<string>("url")})
                 .FirstOrDefault();
 
-            urlResponse = new RedirectResponse(build?.Url ?? $"https://bitbucket.org/{cacheKey.Item1}/{cacheKey.Item2}/addon/pipelines/home#!/results/");
 
-            statusResponse = GetStatusResponse(build?.State);
+            cacheItem = new BadgeCacheItem(
+                GetStatusResponse(build?.State),
+                new RedirectResponse(build?.Url ?? $"https://bitbucket.org/{cacheKey.Item1}/{cacheKey.Item2}/addon/pipelines/home#!/results/")
+                );
 
-            await CacheResult(cacheKey, urlResponse, statusResponse);
-            return status ? statusResponse : urlResponse;
+            StatusCache.AddOrUpdate(cacheKey, cacheItem, (key, old) => cacheItem);
+            return status ? cacheItem.Status : cacheItem.Url;
         }
 
         private static Response GetStatusResponse(string state)
@@ -103,21 +98,6 @@ namespace BitbucketPipelinesShield
                 }
             }
             return statusResponse;
-        }
-
-        private static async Task CacheResult(Tuple<string, string, string> cacheKey, Response urlResponse, Response statusResponse)
-        {
-            await UrlResponseCache.AddOrUpdate(cacheKey, urlResponse, (key, old) => urlResponse);
-            await StatusResponseCache.AddOrUpdate(cacheKey, statusResponse, (key, old) => statusResponse);
-            new System.Threading.Thread(
-                () =>
-                {
-                    System.Threading.Thread.Sleep(30000);
-                    Response removed;
-                    UrlResponseCache.TryRemove(cacheKey, out removed);
-                    StatusResponseCache.TryRemove(cacheKey, out removed);
-                }
-                ).Start();
         }
 
         private static async Task<string> GetBitbucketStatus(Tuple<string, string, string> cacheKey)
