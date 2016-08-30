@@ -14,6 +14,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <SchemaVersion>2.0</SchemaVersion>
+    <ApplicationInsightsResourceId>/subscriptions/b3dbc12a-40d7-4475-a629-61c6736b6aae/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/BitbucketPipelinesShield</ApplicationInsightsResourceId>
   </PropertyGroup>
   <ItemGroup>
     <DnxInvisibleContent Include="bower.json" />
