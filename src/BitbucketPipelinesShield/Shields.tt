@@ -32,14 +32,15 @@ using(var client = new System.Net.WebClient())
     #>
         private static readonly byte[] <#=badge.Property#> = { <#=dataString #> };
         private const int <#=badge.Property#>Length = <#=shieldData.Length #>;
-        public static Response <#=badge.Property#>Response { get; } =   new Response {
+        private static void <#=badge.Property#>Contents(System.IO.Stream stream) => stream.Write(<#=badge.Property#>, 0, <#=badge.Property#>Length);
+        public static Response <#=badge.Property#>Response()  =>   new Response {
                                                                             ContentType = SvgContentType,
-                                                                            Contents = stream => stream.Write(<#=badge.Property#>, 0, <#=badge.Property#>Length),
+                                                                            Contents = <#=badge.Property#>Contents,
                                                                             Headers =   { 
                                                                                             { "Content-Disposition", "inline;filename=<#=badge.Property#>.svg" },
                                                                                             { "Pragma", "no-cache"},
-                                                                                            {"Cache-Control", "no-store, no-cache, must-revalidate, pre-check=0, post-check=0, max-age=0"},
-                                                                                            {"Expires", "-1"}
+                                                                                            { "Cache-Control", "no-store, no-cache, must-revalidate, pre-check=0, post-check=0, max-age=0" },
+                                                                                            { "Expires", "-1" }
                                                                                         }
                                                                         }; 
 <# }

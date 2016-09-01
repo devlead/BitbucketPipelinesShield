@@ -13,7 +13,7 @@ namespace BitbucketPipelinesShield
     {
         public BadgeModule()
         {
-            Get("/", _=> Shields.BitbucketPipelinesShieldResponse);
+            Get("/", _=> Shields.BitbucketPipelinesShieldResponse());
             Get("/status/{owner}/{repo}/{node}", async _ => await GetBuildStatus(_.owner, _.repo, _.node));
             Get("/url/{owner}/{repo}/{node}", async _ => await GetBuildUrl(_.owner, _.repo, _.node));
         }
@@ -29,7 +29,7 @@ namespace BitbucketPipelinesShield
             }
             catch (Exception)
             {
-                return Shields.BuildUnresponsiveResponse;
+                return Shields.BuildUnresponsiveResponse();
             }
         }
 
@@ -50,9 +50,8 @@ namespace BitbucketPipelinesShield
             BadgeCacheItem cacheItem;
             if (StatusCache.TryGetValue(cacheKey, out cacheItem) && cacheItem.Expires > DateTime.UtcNow.Ticks)
             {
-                return status ? cacheItem.Status : cacheItem.Url;
+                return (status ? cacheItem.Status : cacheItem.Url)();
             }
-
             var bitbucketStatus = await GetBitbucketStatus(cacheKey);
             var parsedStats = Newtonsoft.Json.Linq.JObject.Parse(bitbucketStatus);
             var build = parsedStats
@@ -61,19 +60,19 @@ namespace BitbucketPipelinesShield
                 .Select(token => new {State = token.Value<string>("state"), Url = token.Value<string>("url")})
                 .FirstOrDefault();
 
-
             cacheItem = new BadgeCacheItem(
                 GetStatusResponse(build?.State),
-                new RedirectResponse(build?.Url ?? $"https://bitbucket.org/{cacheKey.Item1}/{cacheKey.Item2}/addon/pipelines/home#!/results/")
+                () => new RedirectResponse(build?.Url ?? $"https://bitbucket.org/{cacheKey.Item1}/{cacheKey.Item2}/addon/pipelines/home#!/results/")
                 );
 
             StatusCache.AddOrUpdate(cacheKey, cacheItem, (key, old) => cacheItem);
-            return status ? cacheItem.Status : cacheItem.Url;
+
+            return (status ? cacheItem.Status : cacheItem.Url)();
         }
 
-        private static Response GetStatusResponse(string state)
+        private static Func<Response> GetStatusResponse(string state)
         {
-            Response statusResponse;
+            Func<Response> statusResponse;
             switch (state)
             {
                 case "SUCCESSFUL":

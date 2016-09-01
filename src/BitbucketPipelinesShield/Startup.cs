@@ -34,9 +34,12 @@ namespace BitbucketPipelinesShield
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseApplicationInsightsExceptionTelemetry();
-            app.UseApplicationInsightsRequestTelemetry();
-            app.UseStatusCodePages();
+            else
+            {
+                app.UseApplicationInsightsExceptionTelemetry();
+                app.UseApplicationInsightsRequestTelemetry();
+                app.UseStatusCodePages();
+            }
             app.UseOwin(o => o.UseNancy());
         }
     }
