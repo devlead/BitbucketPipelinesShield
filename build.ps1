@@ -1,4 +1,4 @@
-$CakeVersion = "0.16.0-alpha0044"
+$CakeVersion = "0.16.1"
 $DotNetChannel = "preview";
 $DotNetVersion = "1.0.0-preview2-003121";
 $DotNetInstallerUri = "https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0-preview2/scripts/obtain/dotnet-install.ps1";
@@ -69,8 +69,9 @@ Function Unzip
 $CakePath = Join-Path $ToolPath "Cake.CoreCLR.$CakeVersion/Cake.dll"
 if (!(Test-Path $CakePath)) {
     Write-Host "Installing Cake..."
-     (New-Object System.Net.WebClient).DownloadFile("https://www.myget.org/F/cake/api/v2/package/Cake.CoreCLR/$CakeVersion", "$ToolPath\Cake.CoreCLR.zip")
+     (New-Object System.Net.WebClient).DownloadFile("https://www.nuget.org/api/v2/package/Cake.CoreCLR/$CakeVersion", "$ToolPath\Cake.CoreCLR.zip")
      Unzip "$ToolPath\Cake.CoreCLR.zip" "$ToolPath/Cake.CoreCLR.$CakeVersion"
+     Remove-Item "$ToolPath\Cake.CoreCLR.zip"
 }
 
 ###########################################################################
