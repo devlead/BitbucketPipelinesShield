@@ -4,7 +4,7 @@ NancyFX based project that provides a shield for your Bitbucket Pipelines build 
 
 | Build server                | Platform     | Status                                                                                                                    |
 |-----------------------------|--------------|---------------------------------------------------------------------------------------------------------------------------|
-| Bitbucket Pipelines         | Linux        | [![Build Status](https://bitbucketshield.azurewebsites.net/status/devlead/bitbucketpipelinesshield/master)](https://bitbucketshield.azurewebsites.net/url/devlead/bitbucketpipelinesshield/master) |
+| Bitbucket Pipelines         | Linux        | [![Build Status](https://cakebitbucketpipelinesshield.azurewebsites.net/status/devlead/bitbucketpipelinesshield/master)](https://bitbucketshield.azurewebsites.net/url/devlead/bitbucketpipelinesshield/master) |
 | AppVeyor                    | Windows      | [![Build Status](https://img.shields.io/appveyor/ci/devlead/BitbucketPipelinesShield/master.svg)](https://ci.appveyor.com/project/devlead/bitbucketpipelinesshield/branch/master) |
 | TravisCI                    | Linux & OSX  | [![Build Status](https://travis-ci.org/devlead/BitbucketPipelinesShield.svg?branch=master)](https://travis-ci.org/devlead/BitbucketPipelinesShield) |
 
