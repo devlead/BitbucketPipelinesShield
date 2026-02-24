@@ -4,8 +4,6 @@ Azure Function that provides a shield (badge) for your Bitbucket Pipelines build
 
 [![Build using Cake.Sdk and File based Cake](https://github.com/devlead/BitbucketPipelinesShield/actions/workflows/CakeSdk.yml/badge.svg)](https://github.com/devlead/BitbucketPipelinesShield/actions/workflows/CakeSdk.yml)
 
-[![Deploy to Azure](http://azuredeploy.net/deploybutton.svg)](https://azuredeploy.net/)
-
 ## Usage
 
 The app serves an SVG badge for the latest build status and can redirect to the latest build log.
