@@ -1,32 +1,39 @@
 # Bitbucket Pipelines Shield
-NancyFX based project that provides a shield for your Bitbucket Pipelines build status
 
+Azure Function that provides a shield (badge) for your Bitbucket Pipelines build status.
 
-| Build server                | Platform     | Status                                                                                                                    |
-|-----------------------------|--------------|---------------------------------------------------------------------------------------------------------------------------|
-| Bitbucket Pipelines         | Linux        | [![Build Status](https://cakebitbucketpipelinesshield.azurewebsites.net/status/devlead/bitbucketpipelinesshield/master)](https://bitbucketshield.azurewebsites.net/url/devlead/bitbucketpipelinesshield/master) |
-| AppVeyor                    | Windows      | [![Build Status](https://img.shields.io/appveyor/ci/devlead/BitbucketPipelinesShield/master.svg)](https://ci.appveyor.com/project/devlead/bitbucketpipelinesshield/branch/master) |
-| TravisCI                    | Linux & OSX  | [![Build Status](https://travis-ci.org/devlead/BitbucketPipelinesShield.svg?branch=master)](https://travis-ci.org/devlead/BitbucketPipelinesShield) |
+[![Build using Cake.Sdk and File based Cake](https://github.com/devlead/BitbucketPipelinesShield/actions/workflows/CakeSdk.yml/badge.svg)](https://github.com/devlead/BitbucketPipelinesShield/actions/workflows/CakeSdk.yml)
 
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.svg)](https://azuredeploy.net/)
 
 ## Usage
-The web site can provide an SVG for last build status and also redirect to latest build log.
+
+The app serves an SVG badge for the latest build status and can redirect to the latest build log.
 
 ### Status
-The status route provides an shields.io badge for given repo and branch.
+
+Returns an SVG badge for the given repo and branch (or commit node).
+
 ```
-{url where shield project is deployed}/[site]/status/{owner}/{repo}/{node}
+{baseUrl}/status/{owner}/{repo}/{node}
 ```
+
 ### Url
-The url route provides and redirect to latest build log for given repo and branch.
+
+Redirects to the latest pipeline build log for the given repo and branch.
+
 ```
-{url where shield project is deployed}/url/{owner}/{repo}/{node}
+{baseUrl}/url/{owner}/{repo}/{node}
 ```
+
+Replace `{baseUrl}` with the URL where the function app is deployed (e.g. `https://your-function-app.azurewebsites.net`). `{owner}` and `{repo}` are the Bitbucket workspace and repository; `{node}` is the branch name or commit hash.
+
 ### Markdown
-```
-[![Build Status]](status url)](redirect url)
+
+```markdown
+[![Build Status]({baseUrl}/status/{owner}/{repo}/{node})]({baseUrl}/url/{owner}/{repo}/{node})
 ```
 
 ## Limitations
-Currently only supports public repositories, the project is at an rough initial proof of concept stage and might not work at all for your repo.
+
+Only public repositories are supported. The project is an early proof of concept and may not work for every repo.

@@ -1,0 +1,26 @@
+name: Build using Cake.Sdk and File based Cake
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - master
+  pull_request:
+jobs:
+  build:
+    name: Build, Publish and Zip
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the sources
+        uses: actions/checkout@v4
+
+      - name: Install .NET SDK (global.json)
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Run Cake File
+        uses: cake-build/cake-action@v3
+        with:
+          file-path: cake.cs
+          target: GitHubActions
