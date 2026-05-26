@@ -1,4 +1,4 @@
-#:sdk Cake.Sdk@6.0.0
+#:sdk Cake.Sdk@6.2.0
 #:package Cake.BuildSystems.Module@9.0.0
 
 var target = Argument("target", "Publish");
