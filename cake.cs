@@ -1,5 +1,5 @@
 #!/usr/bin/env dotnet
-#:sdk Cake.Sdk@6.3.0
+#:sdk Cake.Sdk@7.0.0
 #:package Cake.BuildSystems.Module@9.0.0
 
 var target = Argument("target", "Publish");
